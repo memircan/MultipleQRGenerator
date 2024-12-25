@@ -1,0 +1,124 @@
+﻿@model QRGenerator.Models.TextToQRModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Toplu QR Kod Oluşturucu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .form-container {
+            margin-bottom: 20px;
+        }
+
+        .qr-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px;
+            padding: 10px;
+            width: 100%;
+            max-width: 1200px;
+            box-sizing: border-box;
+        }
+
+        .qr-item {
+            text-align: center;
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-code {
+            margin-bottom: 10px;
+        }
+
+        .qr-text {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .textarea-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        textarea {
+            width: 100%;
+            max-width: 600px;
+            height: 150px;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+            button:hover {
+                background-color: #45a049;
+            }
+    </style>
+</head>
+<body>
+    <h1>Toplu QR Kod Oluşturucu</h1>
+
+    <div class="form-container">
+        <form method="post">
+            <div class="textarea-container">
+                <h3>Her satırda bir metin olacak şekilde girin:</h3>
+                <textarea name="InputText" rows="10" cols="50" placeholder="QR Code 1
+QR Code 2
+QR Code 3...">@Model.InputText</textarea>
+                <button type="submit">QR Kodları Oluştur</button>
+            </div>
+        </form>
+    </div>
+
+    @if (Model.QRCodeImagesBase64 != null && Model.QRCodeImagesBase64.Count > 0)
+    {
+        <h3>Oluşturulan QR Kodlar:</h3>
+        <div class="qr-container">
+            @foreach (var qrCode in Model.QRCodeImagesBase64.Select((value, index) => new { value, index }))
+            {
+                // Metni split ile ayıralım ve son 6 karakteri alalım
+                var last6Chars = qrCode.value.Text.Length > 6 ? qrCode.value.Text.Substring(qrCode.value.Text.Length - 6) : qrCode.value.Text;
+
+                <div class="qr-item">
+                    <div class="qr-code">
+                        <img src="@qrCode.value.QRCodeBase64" alt="QR Kod" />
+                    </div>
+                    <div class="qr-text">
+                        <p><strong>@(qrCode.index + 1)</strong>.  @last6Chars</p> <!-- QR Kod numarası ve son 6 karakter -->
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</body>
+</html>
